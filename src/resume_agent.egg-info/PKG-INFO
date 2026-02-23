@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: resume-agent
+Version: 0.1.0
+Summary: 一个基于 AI 的简历一键定制工具，支持结构化输出与 STAR 法则重写。
+Author-email: David <david@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/bowen-duan/resume-agent
+Project-URL: Bug Tracker, https://github.com/bowen-duan/resume-agent/issues
+Keywords: AI,Resume,LLM,Agent,Pydantic
+Requires-Python: >=3.12
+Description-Content-Type: text/markdown
+Requires-Dist: openai>=1.0.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: python-dotenv>=1.0.0
+
+# 简历 Agent
+
+通过 AI 提取 JD 关键词并自动重写简历。
+
+## 快速开始
+
+```bash
+# 确保已配置 .env 中的 API Key（OPENAI_API_KEY 或 DEEPSEEK_API_KEY）
+python main.py
+```
+
+## 项目结构
+
+```
+resume-agent/
+├── src/resume_agent/   # 核心逻辑
+├── tests/              # 单元测试
+├── data/               # 示例 JD 与简历
+└── main.py             # 启动入口
+```
+
+## 使用方式
+
+```bash
+# 使用默认示例数据
+python main.py
+
+# 指定路径（后续支持）
+python main.py --resume data/base_resume.md --jd data/target_jd.txt
+```
+
+## 依赖
+
+- Python 3.12+
+- Pydantic V2
+- OpenAI / DeepSeek API

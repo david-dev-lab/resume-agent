@@ -1,0 +1,40 @@
+# 简历Agent 项目准则 (David 专属)
+
+## 项目背景
+- 这是一个名为“简历Agent”的极速开源项目，目标是 1.5 天产出 MVP。
+- 开发者：David (david-dev-lab)。
+- 核心功能：通过 AI 提取 JD 关键词并自动重写简历。
+
+## 技术约束
+- 语言：Python 3.12+ (Conda 环境)。
+- 核心库：Pydantic V2 (必须使用类型标注)。
+- 交互：优先保证原生 OpenAI/DeepSeek API 调用，不使用 LangChain 等重型框架。
+- 输出：所有 LLM 返回必须经过 Pydantic 模型校验。
+
+## 协作偏好
+- 风格：极简主义，代码要短，逻辑要清。
+- 语言：代码注释和文档使用中文。
+- 隐私：绝对禁止在代码中硬编码 API Key，必须提示使用 `.env` 文件。
+
+## 常用指令快捷映射
+- /optimize: 针对简历中的项目经历进行 STAR 法则重写逻辑的优化。
+- /pydantic: 检查当前模型是否符合 Pydantic V2 的最新标准。
+
+
+
+# Resume-Agent: Gemini 3 极效开发准则
+
+## 1. Token 熔断原则
+- **拒绝复读**：禁止在回复中包含任何我已提供的代码，除非是在其基础上进行的增量修改。
+- **Diff 模式**：优先输出 git diff 格式或“只展示修改函数”的代码片段。
+- **跳过确认**：禁止输出“好的”、“我理解了”、“根据你的代码”等废话。
+
+## 2. Gemini 3 协作逻辑
+- **Flash 优先**：凡是涉及 HTML 布局、Tailwind 样式、简单逻辑、Markdown 文档、README 编写，强制使用 Gemini 3 Flash。
+- **Pro 决策**：仅在处理 Pydantic 嵌套验证、复杂 API 异常捕获、项目全局重构时，手动切换到 Gemini 3 Pro。
+- **CoT 禁用**：除非我显式要求 "Let's think step by step"，否则禁止输出推理过程。
+
+## 3. 技术底线
+- Python 3.12, Pydantic V2, Jinja2.
+- 严格遵循 src/ 布局，禁止在根目录新建 .py 文件。
+- 所有的简历重写逻辑必须基于 STAR 法则且带量化指标。

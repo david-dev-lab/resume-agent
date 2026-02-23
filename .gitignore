@@ -1,0 +1,49 @@
+# === Python 核心 ===
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# === 环境与依赖 ===
+# 忽略 Conda 本地环境或 venv
+.venv/
+venv/
+env/
+lib/
+bin/
+include/
+conda-bld/
+# 如果后续用了 uv
+.uv/
+
+# === 隐私与敏感信息 (最重要！) ===
+.env
+.env.local
+.env.*
+secrets.json
+*.key
+
+# === Mac 系统文件 ===
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# === IDE 配置文件 ===
+.vscode/
+.idea/
+# 注意：不要忽略 .cursorrules，它是 AI 协作的核心，必须提交
+.cursor/
+!.cursorrules
+
+# === 简历Agent 项目专属 ===
+# 忽略你用来测试的真实简历和生成的临时文件
+data/resumes/
+data/jds/
+outputs/
+*.pdf
+*.docx
+temp/
+optimized_resume.md
