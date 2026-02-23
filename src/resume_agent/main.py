@@ -41,16 +41,16 @@ def main():
         # 1. 保存为 HTML
         save_as_html(result.model_dump(), args.output)
         
-        # 2. 默认同时生成 PDF
+        # 2. 默认同时生成 PDF (使用 Playwright)
         pdf_path = args.output.replace(".html", ".pdf")
-        print("📄 正在生成 PDF 版本 (WeasyPrint)...")
         try:
-            save_as_pdf(result.model_dump(), pdf_path)
-        except OSError as e:
-            print(f"⚠️ PDF 生成失败: {e}")
-            print("💡 提示: 可能需要安装系统依赖 (如 pango/cairo)。Mac 用户请运行: brew install pango cairo")
+            # 注意：这里我们直接传递 HTML 文件路径，而不是数据
+            # 这样 Playwright 就能渲染出和浏览器一模一样的效果
+            save_as_pdf(args.output, pdf_path)
         except Exception as e:
             print(f"⚠️ PDF 生成出错: {e}")
+            if "playwright" in str(e).lower() or "browser" in str(e).lower():
+                print("💡 提示: 似乎是 Playwright 环境问题。请尝试运行: playwright install")
 
         # 尝试自动打开 HTML (兼容 Mac/Linux)
         # 优先打开 PDF (如果生成成功)，否则打开 HTML

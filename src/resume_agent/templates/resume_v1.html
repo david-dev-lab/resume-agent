@@ -3,96 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ name }} - 简历</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        
-        /* 强制指定中文字体栈，防止 PDF 乱码 */
-        body { 
-            font-family: 'Inter', "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif; 
+        /* ================= Reset & Base ================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact; /* 强制打印背景色 */
+            print-color-adjust: exact;
         }
 
-        /* 针对 PDF 打印的特殊样式 */
-        @media print {
-            body { 
-                background: white; 
-                margin: 0;
-                padding: 0;
-            }
-            .max-w-4xl {
-                max-width: none;
-                box-shadow: none;
-                border-radius: 0;
-            }
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #334155; /* text-slate-700 */
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
         
+        /* ... (中间样式保持不变) ... */
+
+        /* ================= A4 Paper Layout ================= */
         @page {
             size: A4;
-            margin: 0;
+            margin: 0; /* 关键：强制移除打印机默认边距 */
         }
+
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto; /* 移除外边距 */
+            background: white;
+            box-shadow: none; /* 移除阴影 */
+            position: relative;
+        }
+
+        /* 打印时去除阴影和外边距，并强制占满 */
+        @media print {
+            body {
+                background: white;
+            }
+            .page-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+        }
+
+        /* ================= Header Section ================= */
+        .header {
+            background-color: #1e293b; /* bg-slate-800 */
+            color: white;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header-left h1 {
+            font-size: 36px; /* text-4xl */
+            font-weight: 700;
+            letter-spacing: 0.025em;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            font-size: 20px; /* text-xl */
+            color: #cbd5e1; /* text-slate-300 */
+            font-weight: 500;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 14px; /* text-sm */
+            color: #94a3b8; /* text-slate-400 */
+            line-height: 1.6;
+        }
+
+        .header-right a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* ================= Content Section ================= */
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 20px; /* text-2xl is usually 24px, but 20px fits better for print */
+            font-weight: 700;
+            color: #1e293b; /* text-slate-800 */
+            border-bottom: 2px solid #e2e8f0; /* border-slate-200 */
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* ================= Summary ================= */
+        .summary-text {
+            color: #475569; /* text-gray-600 */
+            line-height: 1.625;
+            text-align: justify;
+        }
+
+        /* ================= Skills ================= */
+        .skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            background-color: #f1f5f9; /* bg-slate-100 */
+            color: #334155; /* text-slate-700 */
+            padding: 4px 12px;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 13px; /* text-sm */
+            font-weight: 500;
+            border: 1px solid #e2e8f0; /* border-slate-200 */
+        }
+
+        /* ================= Experience ================= */
+        .experience-item {
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9; /* border-gray-100 */
+            margin-bottom: 16px;
+        }
+        
+        .experience-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .exp-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .exp-title {
+            font-size: 16px; /* text-lg */
+            font-weight: 700;
+            color: #334155; /* text-slate-700 */
+        }
+
+        .exp-role {
+            font-size: 12px;
+            padding: 2px 8px;
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #2563eb; /* text-blue-600 */
+            border: 1px solid #dbeafe; /* border-blue-100 */
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .exp-date {
+            font-size: 14px; /* text-sm */
+            color: #64748b; /* text-slate-500 */
+            font-weight: 500;
+        }
+
+        .exp-tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .tech-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            background-color: #f8fafc; /* bg-gray-50 */
+            color: #64748b; /* text-gray-500 */
+            border: 1px solid #f1f5f9; /* border-gray-100 */
+            border-radius: 2px;
+        }
+
+        .exp-bullets {
+            list-style-type: disc;
+            list-style-position: outside;
+            margin-left: 18px;
+            color: #475569; /* text-gray-600 */
+            font-size: 14px; /* text-sm */
+            line-height: 1.6;
+        }
+        
+        .exp-bullets li {
+            margin-bottom: 4px;
+        }
+
+        /* ================= Education ================= */
+        .education-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .edu-school {
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .edu-details {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .edu-honors {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* ================= Footer ================= */
+        .footer {
+            background-color: #f8fafc; /* bg-slate-50 */
+            padding: 16px 40px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .footer-text {
+            color: #94a3b8;
+        }
+        
+        .score-high { color: #16a34a; font-weight: bold; }
+        .score-mid { color: #ca8a04; font-weight: bold; }
+        .score-low { color: #dc2626; font-weight: bold; }
+
     </style>
 </head>
-<body class="bg-gray-100 p-8 min-h-screen">
-    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg overflow-hidden">
+<body>
+    <div class="page-container">
         <!-- Header -->
-        <div class="bg-slate-800 p-10 text-white">
-            <div class="flex justify-between items-end">
-                <div>
-                    <h1 class="text-4xl font-bold tracking-wide">{{ name }}</h1>
-                    <p class="text-xl text-slate-300 mt-2 font-medium">{{ title }}</p>
-                </div>
-                <div class="text-right text-sm text-slate-400 space-y-1">
-                    {% if contact.email %}<p>Email: {{ contact.email }}</p>{% endif %}
-                    {% if contact.github %}<p>GitHub: <a href="{{ contact.github }}" class="hover:text-white transition">{{ contact.github }}</a></p>{% endif %}
-                    {% if contact.phone %}<p>Phone: {{ contact.phone }}</p>{% endif %}
-                    {% if contact.blog %}<p>Blog: <a href="{{ contact.blog }}" class="hover:text-white transition">{{ contact.blog }}</a></p>{% endif %}
-                </div>
+        <div class="header">
+            <div class="header-left">
+                <h1>{{ name }}</h1>
+                <p>{{ title }}</p>
+            </div>
+            <div class="header-right">
+                {% if contact.email %}<p>Email: {{ contact.email }}</p>{% endif %}
+                {% if contact.github %}<p>GitHub: <a href="{{ contact.github }}">{{ contact.github }}</a></p>{% endif %}
+                {% if contact.phone %}<p>Phone: {{ contact.phone }}</p>{% endif %}
+                {% if contact.blog %}<p>Blog: <a href="{{ contact.blog }}">{{ contact.blog }}</a></p>{% endif %}
             </div>
         </div>
 
-        <div class="p-10 space-y-8">
+        <div class="content">
             <!-- Summary -->
-            <section>
-                <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">个人总结</h2>
-                <p class="text-gray-700 leading-relaxed">{{ summary }}</p>
+            <section class="section">
+                <h2 class="section-title">个人总结</h2>
+                <p class="summary-text">{{ summary }}</p>
             </section>
 
             <!-- Skills -->
-            <section>
-                <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">技术栈</h2>
-                <div class="flex flex-wrap gap-2">
+            <section class="section">
+                <h2 class="section-title">技术栈</h2>
+                <div class="skills-wrapper">
                     {% for skill in skills %}
-                    <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-200 hover:bg-slate-200 transition">{{ skill }}</span>
+                    <span class="skill-tag">{{ skill }}</span>
                     {% endfor %}
                 </div>
             </section>
 
             <!-- Experience -->
-            <section>
-                <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">项目经历</h2>
-                <div class="space-y-6">
+            <section class="section">
+                <h2 class="section-title">项目经历</h2>
+                <div>
                     {% for proj in experience %}
-                    <div class="pb-4 border-b border-gray-100 last:border-0">
-                        <div class="flex justify-between items-baseline mb-2">
-                            <div class="flex items-center gap-3">
-                                <h3 class="text-lg font-bold text-slate-700">{{ proj.project_name }}</h3>
-                                <span class="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded border border-blue-100 font-medium">{{ proj.role }}</span>
+                    <div class="experience-item">
+                        <div class="exp-header">
+                            <div class="exp-title-row">
+                                <h3 class="exp-title">{{ proj.project_name }}</h3>
+                                <span class="exp-role">{{ proj.role }}</span>
                             </div>
-                            <span class="text-sm text-slate-500 font-medium">
+                            <span class="exp-date">
                                 {% if proj.start_date %}{{ proj.start_date }} - {% endif %}{{ proj.end_date if proj.end_date else '至今' }}
                             </span>
                         </div>
                         
                         <!-- Matched Skills Tags -->
                         {% if proj.matched_skills %}
-                        <div class="flex flex-wrap gap-1 mb-3 opacity-80">
+                        <div class="exp-tech-stack">
                             {% for skill in proj.matched_skills %}
-                            <span class="text-[10px] px-1.5 py-0.5 bg-gray-50 text-gray-500 rounded border border-gray-100">{{ skill }}</span>
+                            <span class="tech-tag">{{ skill }}</span>
                             {% endfor %}
                         </div>
                         {% endif %}
 
-                        <ul class="list-disc list-outside ml-4 mt-2 text-gray-600 space-y-1.5 text-sm leading-relaxed marker:text-slate-400">
+                        <ul class="exp-bullets">
                             {% for bullet in proj.optimized_bullets %}
                             <li>{{ bullet }}</li>
                             {% endfor %}
@@ -103,19 +328,19 @@
             </section>
 
             <!-- Education -->
-            <section>
-                <h2 class="text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-2 mb-4">教育背景</h2>
-                <div class="space-y-4">
+            <section class="section">
+                <h2 class="section-title">教育背景</h2>
+                <div>
                     {% for edu in education %}
-                    <div class="flex justify-between items-center">
+                    <div class="education-item">
                         <div>
-                            <h3 class="font-bold text-slate-700">{{ edu.school }}</h3>
-                            <p class="text-slate-500 text-sm">{{ edu.degree }} · {{ edu.major }}</p>
+                            <h3 class="edu-school">{{ edu.school }}</h3>
+                            <p class="edu-details">{{ edu.degree }} · {{ edu.major }}</p>
                             {% if edu.honors %}
-                            <p class="text-xs text-slate-400 mt-1">荣誉: {{ edu.honors | join(', ') }}</p>
+                            <p class="edu-honors">荣誉: {{ edu.honors | join(', ') }}</p>
                             {% endif %}
                         </div>
-                        <span class="text-sm text-slate-400 font-medium">{{ edu.start_year }} - {{ edu.end_year }}</span>
+                        <span class="exp-date">{{ edu.start_year }} - {{ edu.end_year }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -123,9 +348,9 @@
         </div>
         
         <!-- Footer -->
-        <div class="bg-slate-50 p-4 text-center border-t border-slate-100 flex justify-between items-center px-10">
-            <p class="text-xs text-slate-400">Generated by Resume Agent</p>
-            <div class="text-xs font-bold {{ 'text-green-600' if match_score >= 80 else 'text-yellow-600' }}">
+        <div class="footer">
+            <p class="footer-text">Generated by Resume Agent</p>
+            <div class="{{ 'score-high' if match_score >= 80 else ('score-mid' if match_score >= 60 else 'score-low') }}">
                 JD Match Score: {{ match_score }}%
             </div>
         </div>
