@@ -6,7 +6,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        
+        /* 强制指定中文字体栈，防止 PDF 乱码 */
+        body { 
+            font-family: 'Inter', "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif; 
+        }
+
+        /* 针对 PDF 打印的特殊样式 */
+        @media print {
+            body { 
+                background: white; 
+                margin: 0;
+                padding: 0;
+            }
+            .max-w-4xl {
+                max-width: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+        
+        @page {
+            size: A4;
+            margin: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-8 min-h-screen">

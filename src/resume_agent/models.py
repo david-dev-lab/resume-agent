@@ -26,3 +26,10 @@ class ResumeFull(BaseModel):
     experience: List[ProjectExperience] = Field(..., description="项目经历")
     education: List[EducationExperience] = Field(..., description="教育背景")
     match_score: int = Field(..., description="简历与 JD 的匹配度评分 (0-100)")
+
+# --- 新增 Agent 反思模型 ---
+class ResumeCritique(BaseModel):
+    critique: str = Field(..., description="针对简历的简短批评意见，指出哪里没写好，哪里缺少量化")
+    missing_keywords: List[str] = Field(..., description="简历中遗漏的 JD 关键技术词")
+    score: int = Field(..., description="当前简历质量评分 (0-100)")
+    needs_revision: bool = Field(..., description="是否需要重写 (分数<85或有重大遗漏时为True)")

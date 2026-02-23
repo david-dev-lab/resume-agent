@@ -2,7 +2,7 @@ import os
 import argparse
 from dotenv import load_dotenv
 from .core import ResumeAgent
-from .utils import save_as_html
+from .utils import save_as_html, save_as_pdf
 
 def load_text(file_path: str) -> str:
     if not os.path.exists(file_path):
@@ -38,15 +38,28 @@ def main():
     try:
         result = agent.tailor(thoughts, jd)
         
-        # 保存为 HTML 并自动打开
+        # 1. 保存为 HTML
         save_as_html(result.model_dump(), args.output)
         
-        # 尝试自动打开 (兼容 Mac/Linux)
+        # 2. 默认同时生成 PDF
+        pdf_path = args.output.replace(".html", ".pdf")
+        print("📄 正在生成 PDF 版本 (WeasyPrint)...")
         try:
+            save_as_pdf(result.model_dump(), pdf_path)
+        except OSError as e:
+            print(f"⚠️ PDF 生成失败: {e}")
+            print("💡 提示: 可能需要安装系统依赖 (如 pango/cairo)。Mac 用户请运行: brew install pango cairo")
+        except Exception as e:
+            print(f"⚠️ PDF 生成出错: {e}")
+
+        # 尝试自动打开 HTML (兼容 Mac/Linux)
+        # 优先打开 PDF (如果生成成功)，否则打开 HTML
+        try:
+            target_to_open = pdf_path if os.path.exists(pdf_path) else args.output
             if os.name == 'posix':
-                os.system(f"open '{args.output}'")
+                os.system(f"open '{target_to_open}'")
             elif os.name == 'nt':
-                os.startfile(args.output)
+                os.startfile(target_to_open)
         except Exception:
             pass
             

@@ -47,3 +47,4 @@ outputs/
 *.docx
 temp/
 optimized_resume.md
+output/
