@@ -6,7 +6,6 @@ from .utils import save_as_html, save_as_pdf
 
 def load_text(file_path: str) -> str:
     if not os.path.exists(file_path):
-        print(f"⚠️  警告: 文件未找到 - {file_path}")
         return ""
     with open(file_path, "r", encoding="utf-8") as f:
         return f.read()
@@ -19,14 +18,12 @@ def main():
     parser.add_argument("--model", default="deepseek-chat", help="使用的 LLM 模型 (默认: deepseek-chat)")
     
     args = parser.parse_args()
-
     load_dotenv()
     
-    # 实例化
-    print(f"🤖 初始化 Agent (Model: {args.model})...")
-    agent = ResumeAgent(model=args.model)
+    # 简单的启动提示
+    print(f"🚀 Resume Agent 启动 (Model: {args.model})")
     
-    print(f"📂 读取输入文件:\n  - Thoughts: {args.thoughts}\n  - JD: {args.jd}")
+    agent = ResumeAgent(model=args.model)
     thoughts = load_text(args.thoughts)
     jd = load_text(args.jd)
     
@@ -34,26 +31,25 @@ def main():
         print("❌ 错误: 输入内容为空，请检查文件路径。")
         return
 
-    print("🚀 正在将乱麻思绪转化为精美简历 (这可能需要 30-60 秒)...")
     try:
         result = agent.tailor(thoughts, jd)
         
-        # 1. 保存为 HTML
+        # 打印最终匹配分
+        print(f"🎯 最终简历 JD 匹配分: {result.match_score}/100")
+
+        # 1. 保存 HTML (静默)
         save_as_html(result.model_dump(), args.output)
         
-        # 2. 默认同时生成 PDF (使用 Playwright)
+        # 2. 生成 PDF
         pdf_path = args.output.replace(".html", ".pdf")
         try:
-            # 注意：这里我们直接传递 HTML 文件路径，而不是数据
-            # 这样 Playwright 就能渲染出和浏览器一模一样的效果
             save_as_pdf(args.output, pdf_path)
         except Exception as e:
             print(f"⚠️ PDF 生成出错: {e}")
-            if "playwright" in str(e).lower() or "browser" in str(e).lower():
-                print("💡 提示: 似乎是 Playwright 环境问题。请尝试运行: playwright install")
+            if "playwright" in str(e).lower():
+                print("💡 请尝试运行: playwright install")
 
-        # 尝试自动打开 HTML (兼容 Mac/Linux)
-        # 优先打开 PDF (如果生成成功)，否则打开 HTML
+        # 尝试自动打开
         try:
             target_to_open = pdf_path if os.path.exists(pdf_path) else args.output
             if os.name == 'posix':
@@ -64,7 +60,7 @@ def main():
             pass
             
     except Exception as e:
-        print(f"❌ 程序异常终止: {str(e)}")
+        print(f"❌ 运行中断: {str(e)}")
 
 if __name__ == "__main__":
     main()
