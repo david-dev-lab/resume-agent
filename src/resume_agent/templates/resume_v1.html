@@ -16,8 +16,9 @@
         html, body {
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden; /* 防止任何溢出滚动条 */
         }
 
         body {
@@ -39,10 +40,14 @@
         .page-container {
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto; /* 移除外边距 */
+            margin: 0 auto;
             background: white;
-            box-shadow: none; /* 移除阴影 */
+            box-shadow: none;
             position: relative;
+            
+            /* 新增：Flexbox 垂直布局，实现智能填满 */
+            display: flex;
+            flex-direction: column;
         }
 
         /* 打印时去除阴影和外边距，并强制占满 */
@@ -61,12 +66,18 @@
 
         /* ================= Header Section ================= */
         .header {
-            background-color: #1e293b; /* bg-slate-800 */
+            background-color: #1e293b;
             color: white;
             padding: 40px;
+            
+            /* 终极修复：绝对定位强制贴顶 */
+            margin: 0; 
+            border-top: 1px solid #1e293b; /* 物理填补白线 */
+            
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            flex-shrink: 0;
         }
 
         .header-left h1 {
@@ -97,10 +108,15 @@
         /* ================= Content Section ================= */
         .content {
             padding: 40px;
+            flex-grow: 1; /* 让内容区域自动占据剩余空间 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 关键：让各个 section 均匀分布 */
+            gap: 20px; /* 最小间距 */
         }
 
         .section {
-            margin-bottom: 32px;
+            margin-bottom: 0; /* 交给 flex gap 控制 */
         }
 
         .section-title {
@@ -109,7 +125,7 @@
             color: #1e293b; /* text-slate-800 */
             border-bottom: 2px solid #e2e8f0; /* border-slate-200 */
             padding-bottom: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         /* ================= Summary ================= */
@@ -119,21 +135,18 @@
             text-align: justify;
         }
 
-        /* ================= Skills ================= */
+        /* ================= Skills (Concise) ================= */
         .skills-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .skill-tag {
-            background-color: #f1f5f9; /* bg-slate-100 */
-            color: #334155; /* text-slate-700 */
-            padding: 4px 12px;
-            border-radius: 9999px; /* rounded-full */
-            font-size: 13px; /* text-sm */
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.6;
             font-weight: 500;
-            border: 1px solid #e2e8f0; /* border-slate-200 */
+        }
+        
+        .skill-separator {
+            color: #cbd5e1; /* text-slate-300 */
+            margin: 0 8px;
+            font-weight: 300;
         }
 
         /* ================= Experience ================= */
@@ -272,9 +285,7 @@
             <section class="section">
                 <h2 class="section-title">技术栈</h2>
                 <div class="skills-wrapper">
-                    {% for skill in skills %}
-                    <span class="skill-tag">{{ skill }}</span>
-                    {% endfor %}
+                    {% for skill in skills[:8] %}{{ skill }}{% if not loop.last %}<span class="skill-separator">•</span>{% endif %}{% endfor %}
                 </div>
             </section>
 

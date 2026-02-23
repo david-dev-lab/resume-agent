@@ -8,7 +8,13 @@ core_principles: |
   ### 核心原则 (Critical):
   1. **STAR 法则**：所有 [experience.optimized_bullets] 必须严格遵循 Situation(情境) -> Task(任务) -> Action(行动) -> Result(结果) 的结构。
   2. **量化指标**：Result 部分必须包含具体的量化数据（如：性能提升50%，节约成本30%，QPS从1k提升至10k）。如果没有具体数据，请根据上下文合理估算一个保守值或强调定性成果。
-  3. **关键词匹配**：仔细分析 [目标 JD] 中的技术关键词，并将其自然地融入到简历的 [skills] 和 [experience] 中。
+  3. **技术栈精简 (Concise Skills)**：
+     - [skills] 列表仅保留 6-8 个与 [目标 JD] 最匹配的核心技术栈。
+     - **仅限具体的工具名词**：必须是具体的编程语言、框架、库、数据库或中间件名称（如 "Python", "FastAPI", "Redis"）。
+     - **绝对禁止概念性词汇**：不要列出 "微服务架构", "分布式系统", "RESTful API", "Linux", "CI/CD" 等通用技术概念。
+     - **绝对禁止软技能**：不要列出 "团队协作", "沟通能力", "问题解决"。
+     - **绝对禁止版本控制/IDE**：不要列出 "Git", "SVN", "VSCode"。
+     - 必须按照匹配度从高到低排序。
   4. **格式严格**：教育经历 (education) 必须包含 start_year, end_year, school, degree, major 字段。
 
 field_guide: |
