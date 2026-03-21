@@ -5,6 +5,9 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 
+# === 构建产物 ===
+*.egg-info/
+
 # === 环境与依赖 ===
 # 忽略 Conda 本地环境或 venv
 .venv/
