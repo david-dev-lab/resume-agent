@@ -3,10 +3,8 @@ import json
 import yaml
 import sys
 from openai import OpenAI
-from dotenv import load_dotenv
+from pydantic import ValidationError
 from .models import ResumeFull, ResumeCritique
-
-load_dotenv()
 
 class PromptManager:
     """Prompt 仓库管理类"""
@@ -40,25 +38,41 @@ class ResumeAgent:
         print(f"{color}{message}\033[0m")
         sys.stdout.flush()
 
-    def _call_llm(self, system_prompt: str, user_prompt: str, response_model):
-        try:
-            schema_json = json.dumps(response_model.model_json_schema(), ensure_ascii=False)
-            messages = [
-                {"role": "system", "content": f"{system_prompt}\n\n请严格按此 JSON Schema 输出:\n{schema_json}"},
-                {"role": "user", "content": user_prompt}
-            ]
-            
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                response_format={"type": "json_object"}
-            )
-            
-            raw_content = response.choices[0].message.content
-            return response_model.model_validate_json(raw_content)
-        except Exception as e:
-            self._print_status(f"❌ LLM 调用异常: {str(e)}", "\033[91m")
-            raise e
+    def _call_llm(self, system_prompt: str, user_prompt: str, response_model, max_retries: int = 3):
+        schema_json = json.dumps(response_model.model_json_schema(), ensure_ascii=False)
+        messages = [
+            {"role": "system", "content": f"{system_prompt}\n\n请严格按此 JSON Schema 输出:\n{schema_json}"},
+            {"role": "user", "content": user_prompt}
+        ]
+
+        import openai
+        for attempt in range(max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,
+                    response_format={"type": "json_object"}
+                )
+                raw_content = response.choices[0].message.content
+                return response_model.model_validate_json(raw_content)
+            except (openai.APITimeoutError, openai.APIConnectionError) as e:
+                if attempt < max_retries - 1:
+                    self._print_status(f"⏳ 网络超时，第 {attempt + 2} 次重试...", "\033[93m")
+                    continue
+                self._print_status(f"❌ 网络错误，已重试 {max_retries} 次: {e}", "\033[91m")
+                raise
+            except openai.APIError as e:
+                if attempt < max_retries - 1:
+                    self._print_status(f"⚠️ API 错误 ({e.status_code})，重试中...", "\033[93m")
+                    continue
+                self._print_status(f"❌ API 持续报错: {e}", "\033[91m")
+                raise
+            except ValidationError as e:
+                if attempt < max_retries - 1:
+                    self._print_status(f"🔄 输出格式异常，第 {attempt + 2} 次重试...", "\033[93m")
+                    continue
+                self._print_status(f"❌ LLM 输出无法解析 ({e.error_count()} 个字段错误)", "\033[91m")
+                raise
 
     def tailor(self, raw_thoughts: str, jd_text: str) -> ResumeFull:
         """核心流程：Draft -> Critic -> Refine"""

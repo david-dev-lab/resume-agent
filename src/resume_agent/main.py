@@ -2,13 +2,8 @@ import os
 import argparse
 from dotenv import load_dotenv
 from .core import ResumeAgent
-from .utils import save_as_html, save_as_pdf
+from .utils import load_text, save_as_html, save_as_pdf
 
-def load_text(file_path: str) -> str:
-    if not os.path.exists(file_path):
-        return ""
-    with open(file_path, "r", encoding="utf-8") as f:
-        return f.read()
 
 def main():
     parser = argparse.ArgumentParser(description="Resume Agent - 极速简历生成器")
@@ -20,17 +15,16 @@ def main():
     args = parser.parse_args()
     load_dotenv()
     
-    # 简单的启动提示
     print(f"🚀 Resume Agent 启动 (Model: {args.model})")
     
-    agent = ResumeAgent(model=args.model)
-    thoughts = load_text(args.thoughts)
-    jd = load_text(args.jd)
-    
-    if not thoughts or not jd:
-        print("❌ 错误: 输入内容为空，请检查文件路径。")
+    try:
+        thoughts = load_text(args.thoughts)
+        jd = load_text(args.jd)
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
         return
 
+    agent = ResumeAgent(model=args.model)
     try:
         result = agent.tailor(thoughts, jd)
         
@@ -49,13 +43,10 @@ def main():
             if "playwright" in str(e).lower():
                 print("💡 请尝试运行: playwright install")
 
-        # 尝试自动打开
+        import webbrowser
         try:
-            target_to_open = pdf_path if os.path.exists(pdf_path) else args.output
-            if os.name == 'posix':
-                os.system(f"open '{target_to_open}'")
-            elif os.name == 'nt':
-                os.startfile(target_to_open)
+            target = pdf_path if os.path.exists(pdf_path) else args.output
+            webbrowser.open(f"file://{os.path.abspath(target)}")
         except Exception:
             pass
             

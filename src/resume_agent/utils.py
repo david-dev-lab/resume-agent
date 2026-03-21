@@ -1,7 +1,20 @@
 import os
-import math
 from jinja2 import Environment, FileSystemLoader
 from playwright.sync_api import sync_playwright
+
+
+def load_text(file_path: str) -> str:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"文件不存在: {file_path}")
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def save_text(content: str, file_path: str) -> None:
+    os.makedirs(os.path.dirname(file_path) or ".", exist_ok=True)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
 
 def render_html(data: dict) -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -31,20 +44,17 @@ def save_as_pdf(html_path: str, output_path: str):
         page.goto(f"file://{abs_html_path}")
         page.wait_for_load_state("networkidle")
 
-        # Smart Scaling
-        MAX_HEIGHT = 1080 
+        A4_HEIGHT_PX = 1123  # A4 @ 96dpi
         content_height = page.evaluate("document.body.scrollHeight")
-        
-        if content_height > MAX_HEIGHT:
-            scale_factor = max(MAX_HEIGHT / content_height, 0.75)
-            page.evaluate(f"document.body.style.zoom = '{scale_factor}'")
+        scale = min(A4_HEIGHT_PX / content_height, 1.0) if content_height > A4_HEIGHT_PX else 1.0
+        scale = max(scale, 0.75)
 
         page.pdf(
             path=output_path,
             format="A4",
             print_background=True,
             margin={"top": "0", "right": "0", "bottom": "0", "left": "0"},
-            scale=1.0 
+            scale=scale,
         )
         browser.close()
     
