@@ -16,15 +16,15 @@ def save_text(content: str, file_path: str) -> None:
         f.write(content)
 
 
-def render_html(data: dict) -> str:
+def render_html(data: dict, template_name: str = "swiss_single_column.html") -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     templates_dir = os.path.join(current_dir, "templates")
     env = Environment(loader=FileSystemLoader(templates_dir))
-    template = env.get_template("resume_v1.html")
+    template = env.get_template(template_name)
     return template.render(**data)
 
-def save_as_html(data: dict, output_path: str):
-    html_content = render_html(data)
+def save_as_html(data: dict, output_path: str, template_name: str = "swiss_single_column.html"):
+    html_content = render_html(data, template_name)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)

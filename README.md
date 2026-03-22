@@ -25,9 +25,17 @@ resume-run
 # 使用默认示例数据（data/raw_thoughts.md + data/target_jd.txt）
 resume-run
 
-# 指定文件和模型
-resume-run --thoughts data/raw_thoughts.md --jd data/target_jd.txt --output output/my_resume.html --model deepseek-chat
+# 指定文件、模型和排版模板
+resume-run --thoughts data/raw_thoughts.md --jd data/target_jd.txt --output output/my_resume.html --model deepseek-chat --template modern_two_column.html
 ```
+
+## 可用模板
+
+本项目支持多种简历排版模板（感谢 [Resume-Matcher](https://github.com/srbhr/Resume-Matcher) 提供的开源 CSS 设计灵感）：
+- `swiss_single_column.html`: **默认**瑞士设计风格单列模板
+- `swiss_two_column.html`: 瑞士设计风格双列模板（排版紧凑）
+- `modern_single_column.html`: 现代风格单列模板（带彩色下划线）
+- `modern_two_column.html`: 现代风格双列模板（推荐）
 
 ## 项目结构
 
@@ -50,3 +58,8 @@ resume-agent/
 - Python 3.12+
 - Pydantic V2
 - OpenAI / DeepSeek API
+
+## 致谢
+
+**Acknowledgments:**
+The resume HTML templates (Tailwind CSS designs) used in this project are inspired by and ported from [Resume-Matcher](https://github.com/srbhr/Resume-Matcher) (licensed under Apache 2.0).

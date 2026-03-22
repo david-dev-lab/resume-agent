@@ -11,11 +11,12 @@ def main():
     parser.add_argument("--jd", default="data/target_jd.txt", help="包含目标职位描述 (JD) 的文本文件路径")
     parser.add_argument("--output", default="output/tailored_resume.html", help="生成的 HTML 简历保存路径")
     parser.add_argument("--model", default="deepseek-chat", help="使用的 LLM 模型 (默认: deepseek-chat)")
+    parser.add_argument("--template", default="swiss_single_column.html", help="使用的 HTML 模板名称 (例如: modern_two_column.html)")
     
     args = parser.parse_args()
     load_dotenv()
     
-    print(f"🚀 Resume Agent 启动 (Model: {args.model})")
+    print(f"🚀 Resume Agent 启动 (Model: {args.model} | Template: {args.template})")
     
     try:
         thoughts = load_text(args.thoughts)
@@ -32,7 +33,7 @@ def main():
         print(f"🎯 最终简历 JD 匹配分: {result.match_score}/100")
 
         # 1. 保存 HTML (静默)
-        save_as_html(result.model_dump(), args.output)
+        save_as_html(result.model_dump(), args.output, template_name=args.template)
         
         # 2. 生成 PDF
         pdf_path = args.output.replace(".html", ".pdf")

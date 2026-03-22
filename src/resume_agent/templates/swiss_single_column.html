@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ name }} - 简历</title>
+    <!-- 
+      Template layout ported from: https://github.com/srbhr/Resume-Matcher
+      Original Author: Resume-Matcher Contributors
+      License: Apache 2.0
+    -->
+    <style>
+        /* ================= Reset & Tokens ================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        :root {
+            /* Typography */
+            --resume-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --header-font: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+            --body-font: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+
+            /* Text colors */
+            --resume-text-primary: #000000;
+            --resume-text-secondary: #374151;
+            --resume-text-tertiary: #4b5563;
+            --resume-text-body: #1f2937;
+
+            /* Border colors */
+            --resume-border-primary: #9ca3af;
+            --resume-border-secondary: #d1d5db;
+            --resume-border-tertiary: #e5e7eb;
+
+            /* Accent */
+            --resume-accent-bg: #f3f4f6;
+
+            /* Spacing defaults */
+            --section-gap: 1rem;
+            --item-gap: 0.25rem;
+            --line-height: 1.35;
+            --font-size-base: 14px;
+            --header-scale: 2;
+            --section-header-scale: 1.2;
+
+            /* Margin defaults */
+            --margin-top: 10mm;
+            --margin-bottom: 10mm;
+            --margin-left: 10mm;
+            --margin-right: 10mm;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: #f3f4f6;
+        }
+
+        /* ================= A4 Paper Layout ================= */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: none;
+            
+            font-family: var(--body-font);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height);
+            color: var(--resume-text-body);
+            padding: var(--margin-top) var(--margin-right) var(--margin-bottom) var(--margin-left);
+        }
+
+        @media print {
+            body { background: white; }
+            .page-container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+        }
+
+        /* ================= Layout: Swiss Single Column ================= */
+        .container {
+            width: 100%;
+        }
+
+        /* ================= Typography & Helpers ================= */
+        .resume-header {
+            margin-bottom: var(--section-gap);
+            padding-bottom: calc(var(--item-gap) * 1.25);
+            text-align: center;
+            border-bottom: 1px solid var(--resume-border-primary);
+        }
+
+        .resume-name {
+            font-size: calc(var(--font-size-base) * var(--header-scale));
+            font-family: var(--header-font);
+            font-weight: 700;
+            color: var(--resume-text-primary);
+            text-transform: uppercase;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        .resume-title {
+            font-size: calc(var(--font-size-base) * 1.15);
+            color: var(--resume-text-body);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.75rem;
+            font-family: var(--resume-font-mono);
+        }
+
+        .resume-meta {
+            font-family: var(--resume-font-mono);
+            font-size: calc(var(--font-size-base) * 0.82);
+            color: var(--resume-text-tertiary);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            column-gap: 0.25rem;
+            row-gap: 0.25rem;
+        }
+
+        .contact-item a {
+            color: var(--resume-text-primary);
+            text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        .text-muted {
+            color: var(--resume-text-tertiary);
+        }
+
+        /* ================= Sections ================= */
+        .resume-section {
+            margin-bottom: var(--section-gap);
+        }
+
+        .resume-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .resume-section-title {
+            font-size: calc(var(--font-size-base) * var(--section-header-scale));
+            font-family: var(--header-font);
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--resume-border-primary);
+            margin-bottom: var(--item-gap);
+            padding-bottom: 0.125rem;
+            letter-spacing: 0.05em;
+            color: var(--resume-text-primary);
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        .resume-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--item-gap);
+        }
+
+        .resume-item {
+            margin-bottom: var(--item-gap);
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .resume-row-tight {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: calc(var(--item-gap) * 0.6);
+        }
+
+        .resume-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--item-gap);
+        }
+
+        .resume-item-title {
+            font-family: var(--body-font);
+            font-size: var(--font-size-base);
+            font-weight: 700;
+            color: var(--resume-text-primary);
+        }
+
+        .resume-item-subtitle {
+            font-family: var(--body-font);
+            font-size: calc(var(--font-size-base) * 0.95);
+            font-weight: 600;
+            color: var(--resume-text-secondary);
+        }
+
+        .resume-date {
+            font-family: var(--resume-font-mono);
+            font-size: calc(var(--font-size-base) * 0.75);
+            color: var(--resume-text-tertiary);
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: right;
+            margin-left: 1rem;
+        }
+
+        .resume-text-sm {
+            font-family: var(--body-font);
+            font-size: calc(var(--font-size-base) * 0.92);
+        }
+
+        .resume-text {
+            font-family: var(--body-font);
+            text-align: justify;
+        }
+
+        .resume-list {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--item-gap) * 0.75);
+            margin-left: 1rem;
+            list-style-type: none;
+        }
+        
+        .resume-list li {
+            position: relative;
+        }
+        
+        .resume-list li::before {
+            content: "•";
+            position: absolute;
+            left: -1rem;
+        }
+
+        .resume-skill-pill {
+            font-family: var(--resume-font-mono);
+            font-size: calc(var(--font-size-base) * 0.75);
+            padding: 0.125rem 0.375rem;
+            background-color: var(--resume-accent-bg);
+            color: var(--resume-text-body);
+            border: 1px solid var(--resume-border-secondary);
+            border-radius: 4px;
+            white-space: nowrap;
+            display: inline-block;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        
+        <div class="container">
+            <!-- Header -->
+            <header class="resume-header">
+                <h1 class="resume-name">{{ name }}</h1>
+                <h2 class="resume-title">{{ title }}</h2>
+                
+                <div class="resume-meta contact-info">
+                    {% if contact.email %}
+                    <span class="contact-item"><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></span>
+                    {% endif %}
+                    
+                    {% if contact.phone %}
+                    <span class="text-muted">,</span>
+                    <span class="contact-item">{{ contact.phone }}</span>
+                    {% endif %}
+                    
+                    {% if contact.github %}
+                    <span class="text-muted">,</span>
+                    <span class="contact-item"><a href="{{ contact.github }}">{{ contact.github | replace('https://', '') | replace('http://', '') }}</a></span>
+                    {% endif %}
+                    
+                    {% if contact.blog %}
+                    <span class="text-muted">,</span>
+                    <span class="contact-item"><a href="{{ contact.blog }}">{{ contact.blog | replace('https://', '') | replace('http://', '') }}</a></span>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Summary Section -->
+            {% if summary %}
+            <div class="resume-section">
+                <h3 class="resume-section-title">个人总结</h3>
+                <p class="resume-text">{{ summary }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Experience Section -->
+            {% if experience %}
+            <div class="resume-section">
+                <h3 class="resume-section-title">项目经历</h3>
+                <div class="resume-items">
+                    {% for proj in experience %}
+                    <div class="resume-item">
+                        <div class="resume-row-tight">
+                            <h4 class="resume-item-title">{{ proj.project_name }}</h4>
+                            <span class="resume-date">
+                                {% if proj.start_date %}{{ proj.start_date }} - {% endif %}{{ proj.end_date if proj.end_date else '至今' }}
+                            </span>
+                        </div>
+                        
+                        <div class="resume-row resume-item-subtitle">
+                            <span>{{ proj.role }}</span>
+                        </div>
+
+                        {% if proj.matched_skills %}
+                        <div style="margin-bottom: 0.5rem;">
+                            {% for skill in proj.matched_skills %}
+                            <span class="resume-skill-pill" style="font-size: calc(var(--font-size-base) * 0.7); padding: 0.1rem 0.25rem;">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <ul class="resume-list resume-text-sm">
+                            {% for bullet in proj.optimized_bullets %}
+                            <li>{{ bullet }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Education Section -->
+            {% if education %}
+            <div class="resume-section">
+                <h3 class="resume-section-title">教育背景</h3>
+                <div class="resume-items">
+                    {% for edu in education %}
+                    <div class="resume-item">
+                        <div class="resume-row-tight">
+                            <h4 class="resume-item-title">{{ edu.school }}</h4>
+                            <span class="resume-date">{{ edu.start_year }} - {{ edu.end_year }}</span>
+                        </div>
+                        <div class="resume-row-tight resume-item-subtitle">
+                            <span>{{ edu.degree }} · {{ edu.major }}</span>
+                        </div>
+                        {% if edu.honors %}
+                        <p class="resume-text-sm" style="color: var(--resume-text-tertiary); margin-top: 0.25rem;">荣誉: {{ edu.honors | join(', ') }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Skills Section -->
+            {% if skills %}
+            <div class="resume-section">
+                <h3 class="resume-section-title">技术栈</h3>
+                <div class="resume-text-sm" style="display: flex; flex-wrap: wrap;">
+                    {% for skill in skills %}
+                    <span class="resume-skill-pill">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+</body>
+</html>
