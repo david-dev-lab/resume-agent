@@ -12,6 +12,8 @@ StatusCallback = Callable[[str, str], None]
 # Tool 模式防刷；主路径见 steps（单次评修）
 MAX_CRITIQUE_CALLS = 2
 MAX_REFINE_CALLS = 1
+# 版面感知-反馈循环上限（与 critique 精修独立）
+MAX_LAYOUT_RETRIES = 3
 
 
 @dataclass

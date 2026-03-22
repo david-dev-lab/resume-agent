@@ -16,11 +16,18 @@ class ResumeAgent:
         print(f"{color}{message}\033[0m")
         sys.stdout.flush()
 
-    def build_resume(self, raw_thoughts: str, jd_text: str) -> Resume:
+    def build_resume(
+        self,
+        raw_thoughts: str,
+        jd_text: str,
+        *,
+        template_name: str = "swiss_single_column.html",
+    ) -> Resume:
         return build_resume(
             jd_text,
             raw_thoughts,
             self.model,
             self.prompts,
             status=lambda m, c: self._emit_status(m, c),
+            template_name=template_name,
         )

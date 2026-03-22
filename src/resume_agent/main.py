@@ -27,7 +27,7 @@ def main():
 
     agent = ResumeAgent(model=args.model)
     try:
-        result = agent.build_resume(raw_thoughts, jd_text)
+        result = agent.build_resume(raw_thoughts, jd_text, template_name=args.template)
         
         # 打印最终匹配分
         print(f"🎯 最终简历 JD 匹配分: {result.match_score}/100")

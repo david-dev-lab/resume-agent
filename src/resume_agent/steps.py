@@ -7,7 +7,7 @@ from __future__ import annotations
 from pydantic_ai import Agent
 
 from .context import MAX_REFINE_CALLS, ResumeWorkspace, StatusCallback
-from .models import Resume, ResumeCritique
+from .models import LayoutStatus, Resume, ResumeCritique
 from .resume_prompts import ResumePrompts
 from .textutil import one_line
 
@@ -109,6 +109,43 @@ async def run_refine(
             f"   ⚠️ 项目名称相对初稿有变动: {names_before} → {names_after}（应仍来自用户思绪）",
             "\033[96m",
         )
+
+
+async def run_refine_layout(
+    workspace: ResumeWorkspace,
+    model,
+    prompts: ResumePrompts,
+    status: StatusCallback,
+    layout_status: LayoutStatus,
+    feedback_msg: str,
+) -> None:
+    if workspace.draft is None:
+        raise RuntimeError("run_refine_layout: draft 为空")
+    before = workspace.draft
+    status(
+        f"📐 工具 refine_layout：{layout_status.value} — {one_line(feedback_msg, 100)}",
+        "\033[35m",
+    )
+    sub = Agent(
+        model,
+        output_type=Resume,
+        instructions=prompts.get_layout_refine_prompt(),
+    )
+    r = await sub.run(
+        "【用户原始思绪 — 仅允许保留、润色其中出现的事实，禁止新增项目/公司】:\n"
+        f"{workspace.raw_thoughts}\n\n"
+        f"【目标 JD】:\n{workspace.jd_text}\n\n"
+        f"【版面校验状态】{layout_status.value}\n"
+        f"【版面反馈】:\n{feedback_msg}\n\n"
+        f"【当前简历 JSON】:\n{before.model_dump_json()}",
+    )
+    blended = _blend_match_score(before.match_score, r.output.match_score)
+    out = r.output.model_copy(update={"match_score": blended})
+    workspace.draft = out
+    status(
+        f"📐 版面精修 | match {before.match_score}→{out.match_score} | {layout_status.value}",
+        "\033[35m",
+    )
 
 
 # 与 orchestrator 共用的分支条件（单一精修关口）

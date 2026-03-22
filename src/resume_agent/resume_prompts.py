@@ -22,5 +22,8 @@ class ResumePrompts:
     def get_refine_prompt(self) -> str:
         return self.prompts["refine_instruction"]
 
+    def get_layout_refine_prompt(self) -> str:
+        return self.prompts["layout_refine_instruction"]
+
     def get_orchestrator_instructions(self) -> str:
         return self.prompts["orchestrator_instructions"]
