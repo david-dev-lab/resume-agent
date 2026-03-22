@@ -19,15 +19,15 @@ def main():
     print(f"🚀 Resume Agent 启动 (Model: {args.model} | Template: {args.template})")
     
     try:
-        thoughts = load_text(args.thoughts)
-        jd = load_text(args.jd)
+        raw_thoughts = load_text(args.thoughts)
+        jd_text = load_text(args.jd)
     except FileNotFoundError as e:
         print(f"❌ {e}")
         return
 
     agent = ResumeAgent(model=args.model)
     try:
-        result = agent.tailor(thoughts, jd)
+        result = agent.build_resume(raw_thoughts, jd_text)
         
         # 打印最终匹配分
         print(f"🎯 最终简历 JD 匹配分: {result.match_score}/100")

@@ -43,7 +43,14 @@ resume-run --thoughts data/raw_thoughts.md --jd data/target_jd.txt --output outp
 resume-agent/
 ├── src/resume_agent/       # 核心逻辑
 │   ├── main.py             # CLI 入口
-│   ├── core.py             # Agent 与 LLM 流程
+│   ├── core.py             # 对外门面（调用编排层）
+│   ├── orchestrator.py     # build_resume 确定性流程；create_resume_agent 可选
+│   ├── steps.py            # draft / critique / refine 共用实现
+│   ├── textutil.py         # 命令行单行截断
+│   ├── context.py          # ResumeWorkspace / StatusCallback
+│   ├── tools/              # 各 Tool 独立模块（draft / critique / refine）
+│   ├── model_factory.py    # OpenAI 兼容模型（DeepSeek 等）
+│   ├── resume_prompts.py   # ResumePrompts：YAML 指令加载
 │   ├── models.py           # Pydantic 数据模型
 │   ├── utils.py            # HTML/PDF 渲染与文件工具
 │   ├── prompts/            # Prompt 配置
@@ -57,7 +64,8 @@ resume-agent/
 
 - Python 3.12+
 - Pydantic V2
-- OpenAI / DeepSeek API
+- [Pydantic AI](https://github.com/pydantic/pydantic-ai)（Agent + Tool 编排，可观测、可扩展）
+- OpenAI 兼容 API（默认 DeepSeek，见 `.env.example`）
 
 ## 致谢
 
